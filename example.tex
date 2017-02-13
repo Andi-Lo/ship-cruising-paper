@@ -117,17 +117,25 @@ proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 			\label{fig:blur effect}
 		\end{figure}
 
-		Nach dem Anwenden des Blur Filters wird dann als letztes die Landmasse eingezeichnet, damit diese ihre scharfe Kante behält und nicht durch den Blur in unschärfe verschwimmt.
+		Nach dem Anwenden des Blur Filters wird zuletzt die Landmasse eingezeichnet, damit diese ihre scharfe Kante behält und nicht durch den Blur in unschärfe verschwimmt. 
+		Durch dieses Verfahren, haben wir nun eine Pixel-Karte, die nicht nur Schwarz und Weiß, sondern auch Graustufen-Werte zwischen 0-255 beinhalten. Der von uns verwendete A*-Algorithmus\cite{ginstead14}, hat die Möglichkeit eine Kantengewichtung für die Routenberechnung mit einfließen zu lassen. Eine Kantengewichtung führt dazu, das gewisse Wege bevorzugt werden können. In unserem Fall hat die Farbe Schwarz die geringste Gewichtung und ist damit der Absolut bevorzugte Weg, den der A*-Algorithmus wählen kann. Die Graustufen-Werte haben nun eine logarithmische Gewichtung die durch den RGB-Wert der Farbe errechnet wird.
+
+		$weight = \lceil rgbValue * \ln{(rgbValue)/100} \rceil$
+
+		Damit der A*-Algorithmus das Land nicht als Abkürzung nimmt, haben RGB-Werte über 250\footnotemark eine sehr viel höhere Gewichtung. Dadurch soll erreicht werden, dass das Land nur als aller letzte Möglichkeit überquert werden darf. Zum Beispiel dann, wenn die GPS Koordinate eines Hafens, innerhalb von einem Kanal oder Flusses liegt, der im Kartenmaterial nicht enthalten ist. Deshalb erfolgt die Errechnung für RGB-Werte über 250 mittels der Gewichtung $weight = rgbValue^3$. Ein RGB Wert von 255 würde also eine Gewichtung von $255^3 = 16581375$ bedeuten. Wohingegen ein RGB Wert von beispielsweise 50 nur $ weight = \lceil 50 * ln(50)/100 \rceil = \lceil 1.956 \rceil = 2 $ ergeben würde.\\
+
+		\footnotetext{Also Werte die sehr nahe schon an der Farbe Weiß liegt}
 
 		\begin{figure}[!htbp]
 			\centering
 			\includegraphics[width=\linewidth]{route_after_blur}
 			\caption{Ergebnis der Routenberechnung mit Blur Filter Pixel-Karte}
-			\label{fig:route after blur}
+			\label{fig:route_after_blur}
 		\end{figure}
 
-		Wie in Abbildung \ref{fig:route after blur} zu sehen ist, wurde die Route weg von der Küstenlinie geschoben und sieht nun visuell mehr wie eine reale Schiffahrtsroute aus, die zum Beispiel dem einem zu niedrigem Fahrwasser ausweichen würde.
+		Wie in Abbildung \ref{fig:route_after_blur} zu sehen ist, wird die Route weg von der Küstenlinie geschoben und sieht nun visuell mehr wie eine reale Schiffahrtsroute aus, die zum Beispiel einem zu niedrigem Fahrtwasser ausweichen würde.
 
+		Wie in Abbildung \ref{fig:route_after_blur} zu sehen ist, beeiflusst nun die Gewichtung der RGB Werte die wahl der eingeschlagenen Route. Dadurch wird die Route weg von der Küstenlinie "`geschoben"' und visuallisiert nun mehr das reale Verhalten einer Schiffsroute.
 
 
 {\footnotesize \bibliographystyle{acm}
