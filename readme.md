@@ -1,3 +1,8 @@
+# TODO
+
+* Tool introduction (what does it do, why etc)
+* Why pathfinding is really hard for ship-routes (flat open area with no road restrictions).
+
 ## Introduction
 
 * Momentan keine Möglichkeit Routen visuell ansprechend automatisch zu berechnen und ästhetisch darzustellen
@@ -9,7 +14,7 @@
 
 Testing if a pixel is black (water) or white (land). First problem is that the accuracy of this hit testing is only as good as the resolution image of the image I test against. For ports close to each other, this is fine for ports further away, the accuracy suffers.
 
-## Possible improvements:
+## Possible improvements
 
 #### Adding quad-tree preprocessing to the map befor starting a*search
 
@@ -27,8 +32,10 @@ Jump Point Search: http://users.cecs.anu.edu.au/~dharabor/data/papers/harabor-gr
 #### Different Search algorithm?
 
 https://github.com/mikolalysenko/l1-path-finder (Doesn't support weighted edges)
+https://github.com/qiao/PathFinding.js/ Jump Point Search
 
-#### Better coastline data
+#### Better coastline data - DONE
 
 https://www.ngdc.noaa.gov/mgg/shorelines/gshhs.html
 http://openstreetmapdata.com/data/coast
+
