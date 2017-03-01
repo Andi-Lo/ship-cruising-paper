@@ -84,7 +84,8 @@
 }
 
 
-\title{A ship routing algorithm and it's map visualization}
+%\title{A ship routing algorithm and it's map visualization}
+\title{Automatische Visualisierung von Schiffsrouten}
 \author{Andreas Lorer$^{1}$ \and  Kevin Klugmann$^{1}$\\
 \mbox{}\\
 $^{1}$ Hochschule Ravensburg-Weingarten, Doggenriedstr. 88250 Weingarten \\
@@ -95,11 +96,12 @@ contact@andreaslorer.de, kevin.klugmann@gmail.com}
 \maketitle
 
 \begin{abstract}
-	In dieser Arbeit soll aufgezeigt werden, wie eine automatisierte Visualisierung von Kreuzschifffahrtsrouten realisiert werden konnte. Da das Meer eine offene Fläche ohne Begrenzungen darstellt, ergeben sich zahlreiche Probleme für eine Routenfindung. In unserem Ansatz erfolgt das Routing Grid-basiert auf einem HTML5-Canvas. Mittels diesem Grid soll die Route über eine variable Anzahl an Hafenpunkten durch Verwendung des A*-Algorithmus gefunden werden. Es stellte sich heraus, dass eine voll automatische Kartenvisualisierung möglich ist, welche noch viel Potenzial für zukünftige Verbesserungen bietet.
+	In dieser Arbeit soll aufgezeigt werden, wie eine automatisierte Visualisierung von Kreuzschifffahrtsrouten realisiert werden konnte.
+	Anders als im Straßenverkehr, bewegen sich Schiffe nicht in einem fest begrenzten Verkehrsnetzwerk, sondern größtenteils auf offenen Flächen. Daraus ergeben sich zahlreiche Probleme für eine maritime Routenfindung. In unserem Ansatz erfolgt das Routing Grid-basiert auf einem HTML5-Canvas. Mittels diesem Grid soll die Route über eine variable Anzahl an Hafenpunkten durch Verwendung des A*-Algorithmus gefunden werden. Es stellte sich heraus, dass eine voll automatische Kartenvisualisierung möglich ist, diese jedoch noch Potenzial für zukünftige Verbesserungen bietet.
 \end{abstract}
 
-\section{Introduction}
-	Während es im Bereich des Nahverkehrs relativ einfach ist, eine Route zu berechnen\footnotemark und diese in einer interaktiven Karte zu visualisieren, gibt es zum jetzigen Zeitpunkt keine Möglichkeit, dies für Schiffsrouten zu tun. Abbildung \ref{fig:visualisierungsproblem} zeigt eine Visualisierung, wie sie momentan in einer Karte zum Einsatz kommt. 
+\section{Einleitung}
+	Während es im Bereich des Straßenverkehrs relativ einfach ist, eine Route zu berechnen\footnotemark und diese in einer interaktiven Karte zu visualisieren, gibt es zum jetzigen Zeitpunkt keine Möglichkeit, dies für Schiffsrouten zu tun. Abbildung \ref{fig:visualisierungsproblem} zeigt eine Visualisierung, wie sie momentan in einer Karte zum Einsatz kommt. 
 
 	\footnotetext{Via Google-Maps, Bing-Maps oder weiteren Kartenanbieter}
 
@@ -111,14 +113,14 @@ contact@andreaslorer.de, kevin.klugmann@gmail.com}
 		\end{center}
 	\end{figure}
 
-	Die Grafik veranschaulicht bereits deutlich das zu lösende Problem: Die einzelnen Häfen sind nur durch gerade Linien verbunden, die nicht zwischen Wasser und Land unterscheiden. Dadurch führen Routen über Land. Für dieses Problem der automatischen Kartengenerierung wurde ein Algorithmus entwickelt, der in der Lage ist, zwischen Land und Wasser zu unterscheiden und damit eine visuell ansprechendere Visualisierung ermöglicht. Als Eingabe benötigt der Algorithmus eine Liste an Hafen-Positionen, aus welchen er eine Route generiert. Eingabe und Ausgabe werden dabei im \texttt{geojson-Format} \cite{rfc7946} eingelesen, beziehungsweise ausgegeben.
+	Die Grafik veranschaulicht bereits deutlich das zu lösende Problem: Die einzelnen Häfen sind nur durch gerade Linien verbunden, die nicht zwischen Wasser und Land unterscheiden. Dadurch führen Routen über Land. Für dieses Problem der automatischen Kartengenerierung wurde ein Algorithmus entwickelt, welcher in der Lage ist, zwischen Land und Wasser zu unterscheiden und damit eine visuell ansprechendere Visualisierung ermöglicht. Als Eingabe wird eine Liste an Hafen-Positionen benötigt, wovon eine Route als Ausgabe generiert wird. Eingabe und Ausgabe erfolgen dabei im \texttt{geojson-Format} \cite{rfc7946}.
 
 	Momentan werden Routen für die Kreuzschifffahrt vorwiegend auf zwei Arten visualisiert.
 
 	\begin{figure}[!htb]
 		\begin{center}
 		\includegraphics[width=\linewidth]{state_of_the_art}
-		\caption{State of the art}
+		\caption{Visualisierung über Pin's (links) oder händisch gezeichnet (rechts)}
 		\label{fig:state of the art}
 		\end{center}
 	\end{figure}
@@ -137,7 +139,7 @@ contact@andreaslorer.de, kevin.klugmann@gmail.com}
 
 	Andere Bedingungen für einen Algorithmus sind oftmals seine lineare Laufzeit $O(n)$, die für Echtzeitsysteme benötigt werden. Unser Algorithmus ist allerdings nur für den Einsatz im Backend vorhergesehen. Dort werden die Routen für die Anzeige im Frontend bereits vorberechnet und zur Wiederverwendung abgespeichert. Eine lineare Laufzeit ist dadurch nicht von Nöten und war zu keiner Zeit eine Anforderung.
 
-\section{Related Work}
+\section{Relevante Publikationen}
 	Es finden sich bisher nur wenige Publikationen, die sich mit dem Thema Schiffsrouten via Web-Plattform auseinandersetzen.\\
 
 	Die meisten Systeme, die Routenberechnungen für die Schifffahrt durchführen, benutzen eine Graph basierte Grid-Struktur oder eine Abwandlung davon. \cite{makrygiorgos15} entwickelte beispielsweise eine \texttt{Novel Grid Structur} (siehe Abbildung \ref{fig:novel grid structure}). In dieser Datenstruktur werden für jeden Knotenpunkt (Node) maritime Informationen abgespeichert und Gewichtungen für jede Kante (Edge) berechnet.
@@ -149,8 +151,8 @@ contact@andreaslorer.de, kevin.klugmann@gmail.com}
 		\label{fig:novel grid structure}
 	\end{figure}
 
-	Die Motivation dahinter ist dabei meist ein Echtzeitsystem oder eine Echtzeitkalkulation der Route. Eine Grid-Struktur, die wie ein Graph aufgebaut ist, beschleunigt den Suchprozess des A*-Algorithmus erheblich\cite{patel16}. Die Grid-Struktur wird dabei aus den statischen maritimen Informationen und zusätzlichen dynamischen Daten (meterologische Wetterdaten über Windstärke, Windrichtung etc) für die Routenberechnung ergänzt \cite[s. 2]{makrygiorgos15}.
-	Für unseren Algorithmus wäre es zwar hilfreich gewesen, eine solche Datenstruktur zu haben, allerdings verfügten wir über keinerlei Zugriff auf solche Datenquellen, da diese unseren Recherchen nach nicht öffentlich verfügbar sind.
+	Die Motivation dahinter ist dabei meist ein Echtzeitsystem oder eine Echtzeitkalkulation der Route. Eine Grid-Struktur, die wie ein Graph aufgebaut ist, beschleunigt den Suchprozess des A*-Algorithmus erheblich\cite{patel16}. Die Grid-Struktur wird dabei aus den statischen maritimen Informationen und zusätzlichen dynamischen Daten (meterologische Wetterdaten über Windstärke, Windrichtung etc.) für die Routenberechnung ergänzt \cite[s. 2]{makrygiorgos15}.
+	Für unseren Algorithmus wäre es zwar hilfreich gewesen, eine solche Datenstruktur zu haben, allerdings verfügten wir über keinerlei Zugriff auf solche Datenquellen, da diese unseren Recherchen nach nicht öffentlich (kostenfrei) verfügbar sind.
 
 \section{Die Pixel-Karte}
 	In diesem Abschnitt möchten wir unsere Arbeit an dem Routing Algorithmus für Kreuzschifffahrten genauer erklären und den Problemlöseprozess aufzeigen. Unsere Lösung basiert zunächst auf der Generierung einer Pixel-Karte. Diese Karte dient uns als Grundlage für das Routing mittels A*-Algorithmus. Die Pixel-Karte aus Abbildung \ref{fig:Pixel Map Miami} wird durch Kartendaten von Natural Earth\footnotemark auf einem HTML5-Canvas erzeugt. 
@@ -164,7 +166,7 @@ contact@andreaslorer.de, kevin.klugmann@gmail.com}
 		\label{fig:Pixel Map Miami}
 	\end{figure}
 
-	Der Maßstab der Karte beträgt dabei 1:10m (Millionen) und liegt im Datenformat \texttt{.shp} (für Shapefile) vor. Diese wurde mittels eines Tools (QGIS) in \texttt{geojson} umgewandelt. Höher aufgelöstes Kartenmaterial ist im Netz an verschiedenen Stellen zu finden\footnotemark, haben allerdings Dateigrößen von bis zu 500 MB. Da wir solch hohe Datenmengen client-seitig nicht verarbeiten konnten, ist für uns die Karte mit dem Maßstab 1:10m ein solider Kompromiss zwischen nötiger Genauigkeit entlang der Küstenlinie (Inseln \& Fjorde etc.) und Datengröße.
+	Der Maßstab der Karte beträgt dabei 1:10m (Millionen) und liegt im Datenformat \texttt{.shp} (für Shapefile) vor. Diese wurde mittels eines Tools (QGIS) in \texttt{geojson} umgewandelt. Höher aufgelöstes Kartenmaterial ist im Netz an verschiedenen Stellen zu finden\footnotemark, haben allerdings Dateigrößen von bis zu 500 MB. Da wir solch hohe Datenmengen client-seitig nicht verarbeiten konnten, ist für uns die Karte mit dem Maßstab 1:10m ein solider Kompromiss zwischen nötiger Genauigkeit entlang der Küstenlinie (Inseln \& Fjorde) und Datengröße.
 
 	\footnotetext{z.B. bei OpenStreetMap \url{http://openstreetmapdata.com/data/coast}}
 
@@ -199,7 +201,7 @@ contact@andreaslorer.de, kevin.klugmann@gmail.com}
 
 			$weight = \lceil rgbValue * \ln{(rgbValue)/100} \rceil$\\
 
-			Damit der A*-Algorithmus das Land nicht als Abkürzung verwendet, haben RGB-Werte über 250\footnotemark eine sehr viel höhere Gewichtung. Dadurch soll erreicht werden, dass das Land nur als aller letzte Möglichkeit überquert werden darf. Zum Beispiel dann, wenn die GPS Koordinate eines Hafens, innerhalb eines Kanals oder Flusses liegt, der im Kartenmaterial nicht enthalten ist. Deshalb erfolgt die Errechnung für RGB-Werte über 250 mittels der Gewichtung $weight = rgbValue^3$. Ein RGB Wert von 255 würde also eine Gewichtung von $255^3 = 16581375$ bedeuten. Wohingegen ein RGB Wert von beispielsweise 120 nur $ weight = \lceil 120 * ln(120)/100 \rceil = \lceil 5.774 \rceil = 6 $ ergeben würde. Die Gewichtung der Grauwerte zwischen 1-249, werden folglich auf einen Wertebereich von 1-14 gemappt.\\
+			Damit der A*-Algorithmus das Land nicht als Abkürzung verwendet, haben RGB-Werte über 250\footnotemark eine sehr viel höhere Gewichtung. Dadurch soll erreicht werden, dass das Land nur als aller letzte Möglichkeit überquert werden darf. Zum Beispiel dann, wenn die GPS Koordinate eines Hafens, innerhalb eines Kanals oder Flusses liegt, der im Kartenmaterial nicht enthalten ist. Deshalb erfolgt die Errechnung für RGB-Werte über 250 mittels der Gewichtung $weight = rgbValue^3$. Ein RGB Wert von 255 würde also eine Gewichtung von $255^3 = 16581375$ bedeuten. Wohingegen ein RGB Wert von beispielsweise 120 nur $ weight = \lceil 120 * ln(120)/100 \rceil = \lceil 5.774 \rceil = 6 $ ergeben würde. Die Gewichtung der Grauwerte zwischen 1-249, werden folglich auf einen Wertebereich von 1-14 abgebildet.\\
 
 			\footnotetext{Werte die schon sehr nahe an der Farbe Weiß liegen.}
 
@@ -236,12 +238,12 @@ contact@andreaslorer.de, kevin.klugmann@gmail.com}
 	\end{figure}
 
 \section{Karten Rasterisierung}
-	Da das Kartenmaterial die ganze Erde umfasst, mussten Optimierungen gefunden werden, damit die Berechnungszeiten für unsere Route in einem akzeptablen Rahmen bleiben. Durchschnittlich haben wir Routen mit 6 Hafenpunkten, bei welchen die Berechnugszeit im Schnitt bei ~37sec liegt.\\
+	Da das Kartenmaterial die ganze Erde umfasst, mussten Optimierungen gefunden werden, damit die Berechnungszeiten für unsere Route in einem akzeptablen Rahmen bleiben.\\
 
 	In einem ersten Ansatz verfolgten wir das Ziel, die Polygone unseres Kartenmaterials auf die Größe der bbox zuzuschneiden. Dies führte zu allerlei Problemen, die nicht gelöst werden konnten. So hatte beispielsweise die Library zum Zuschneiden an sich schon einen für uns kritischen Fehler\footnotemark, sodass eine andere Lösung gefunden werden musste.
 	\footnotetext{Stand 14.02.2017: \url{https://github.com/w8r/martinez/issues/11}}
 
-	Der zweite Ansatz bestand darin, nur diejenigen \texttt{geojson-Features} auszuwählen, die für die jeweilige Routenberechnungen relevant sind (Abbildung \ref{fig:select_features}).
+	Der zweite Ansatz bestand darin, nur diejenigen \texttt{geojson-Features} auszuwählen, die für die jeweilige Routenberechnungen relevant sind (Abbildung \ref{fig:select_features} rot stellt die Auswahl des Features dar).
 
 	\begin{figure}[!htbp]
 		\centering
@@ -270,9 +272,10 @@ contact@andreaslorer.de, kevin.klugmann@gmail.com}
 		\label{fig:grid_splitter}
 	\end{figure}
 
-	Dadurch sind wir in der Lage, nur noch diejenigen Polygone auszuwählen, die für unsere Route benötigt werden. Dadurch konnte das Berechnen der Pixel-Karte erheblich beschleunigt werden.
+	Das ermöglicht es uns, nur noch diejenigen Features auszuwählen, die für unsere Route benötigt werden. Dadurch konnte das Berechnen der Pixel-Karte erheblich beschleunigt werden. Durchschnittlich haben wir Routen mit 6 Hafenpunkten, bei welchen die Berechnugszeit im Schnitt bei ~37sec liegt.
 
-\section{Das Tool}
+\section{Ergebnis}
+	Das Ergebnis unserer Arbeit ist ein Tool, dass mittels Webtechnologien erstellt wurde und dessen Algorithmus eine Routenberechnung durchführt.
 	Unser Tool, ist in Abbildung \ref{fig:tool} zu sehen und im Web erreichbar unter\footnotemark.
 
 	\footnotetext{Ship-Routing Tool: \url{https://andi-lo.github.io/ship-cruising/dist/}}
@@ -286,7 +289,7 @@ contact@andreaslorer.de, kevin.klugmann@gmail.com}
 
 	Es besitzt ein interaktives Interface, das ein Dropdown-Menü zum Auswählen von vordefinierten Schiffsrouten und eine Drag \& Drop Funktionalität beinhaltet. 
 	Mittels Drag \& Drop können valide\footnotemark geojson-Dateien zuerst hochgeladen und danach mittels "`Go-Button"' direkt die Route berechnet werden. Eine Route wird dabei als geojson-Objekt vom Typ \texttt{FeatureCollection<Point>} (siehe Anhang: Listing \ref{lst:geojson_example}) spezifiziert.
-	Nachdem die Route berechnet wurde, wird sie in die Karte eingezeichnet und weitere Interaktionen wie z.B. Pinching oder Zoom sind möglich.
+	Nachdem die Route berechnet wurde, wird sie in die Karte eingezeichnet und weitere Interaktionen wie z.B. Pinching oder Zoom sind möglich. Nach der Berechnung der Route erfolgen weitere Optimierungsschritte. Zuerst werden ähnlich verlaufende Routenabschnitte zusammengefügt, dann erfolgt eine simplifizierung der Route. Das bedeutet, dass die Anzahl an berechneten Routen-Punkten verringert wird. Zuletzt erfolgt noch das Glätten (smoothing) der Route mittels Catmull-Rom Interpolation.
 
 	\footnotetext{Eine Validierung der geojson-Datei auf Korrektheit erfolgt dabei nicht}
 
@@ -317,7 +320,7 @@ contact@andreaslorer.de, kevin.klugmann@gmail.com}
 	\subsection{Änderung der Heuristik}
 		Der Sinn von einer Heuristik für den A*-Algorithmus ist es, eine Abschätzung für die Länge des kürzesten Pfads zu geben. Je besser die geschätzte Distanz dem kürztesten Pfad entspricht, umso schneller ist der A*-Algorithmus. Momentan wird eine Heuristik eingesetzt, die diagonale Bewegungen erlaubt. Die Heuristik könnte aber auf verschiedene Arten verbessert werden. In \cite{andrew04} wird ein Verfahren vorgestellt, bei dem die Grid-Map vor dem Pathfinding analysiert wird, um eine bessere Heuristik zu generieren.\\
 
-		In "`A New Method of Ship Routing on Raster Grids, with Turn Penalties and Collision Avoidance"'\cite{szlapczynski06} wird die Heuristik dem Verhalten eines Schiffes angenähert. So sind Kursänderungen immer mit einem Verlust an Geschwindigkeit oder einer Verlängerung der Route verbunden. Dieses Verhalten wird nun auch durch die Heuristik wiedergespiegelt und Kursänderungen sind mit "`Kosten"' verbunden, sodass sie, wenn möglich, zu vermeiden sind. Dieses Verhalten könnte sich visuell auch positiv auf unseren Algorithmus auswirken, da momentan der von A* gefundene Weg sehr kantig verläuft.
+		In "`A New Method of Ship Routing on Raster Grids, with Turn Penalties and Collision Avoidance"'\cite{szlapczynski06} wird die Heuristik dem Verhalten eines Schiffes angenähert. So sind Kursänderungen immer mit einem Verlust an Geschwindigkeit oder einer Verlängerung der Route verbunden. Dieses Verhalten wird nun auch durch die Heuristik wiedergespiegelt und Kursänderungen sind mit "`Kosten"' verbunden, sodass sie, wenn möglich, zu vermeiden sind. Dieses Verhalten könnte sich visuell auch positiv auf unseren Algorithmus auswirken, da momentan der von A* gefundene initiale Weg sehr kantig verläuft.
 
 	\subsection{Quad-Tree Preprocessing}
 		Es wäre darüber hinaus auch möglich, die Pixel-Karte in quadratische Regionen zu unterteilen. Große, offene Flächen könnten damit durch nur wenige Quadrate repräsentiert werden und unregelmäßige Kanten entlang der Küste würden durch viele kleine Quadrate entstehen. Eine Implementierung ist zum Beispiel hier zu sehen: \url{https://www.youtube.com/watch?v=95aHGzzNCY8}. Weitere Optimierungsmöglichkeiten für den A*-Algorithmus sind unter \cite{patel16} zu finden.
