@@ -34,7 +34,7 @@ Jump Point Search: http://users.cecs.anu.edu.au/~dharabor/data/papers/harabor-gr
 https://github.com/mikolalysenko/l1-path-finder (Doesn't support weighted edges)
 https://github.com/qiao/PathFinding.js/ Jump Point Search
 
-#### Better coastline data - DONE
+#### Better coastline data
 
 https://www.ngdc.noaa.gov/mgg/shorelines/gshhs.html
 http://openstreetmapdata.com/data/coast
